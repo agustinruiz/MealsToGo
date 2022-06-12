@@ -1,35 +1,58 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components/native";
-import { StatusBar, SafeAreaView, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Searchbar } from "react-native-paper";
-import { RestaurantInfoCard } from "../components/restaurant-info-card.component";
+import { ActivityIndicator, Colors } from "react-native-paper";
 
-// StatusBar.currentHeight fue algo que agrgegamos especialmente para android por lo que para IOS no va a andar
-// por ello con templates strings puedo agregar una condicion y que si StatusBar.currentHeight es nulo(IOS) no ponga
-// la linea de margin-top.
-// Por lo que con la siguiente linea: ${StatusBar.currentHeight && `margin-top: ${StatusBar.currentHeight}px`}
-// le estoy diciendo que si StatusBar.currentHeight tiene un valor pone la linea de margin-top. con esto no rompe en IOS
-const SafeArea = styled(SafeAreaView)`
-  flex: 1;
-  ${StatusBar.currentHeight && `margin-top: ${StatusBar.currentHeight}px`};
-`;
+import { RestaurantInfoCard } from "../components/restaurant-info-card.component";
+import { Spacer } from "../../../components/spacer/spacer.component";
+
+import { SafeArea } from "../../../components/utility/safe-area.component";
+import { RestaurantsContext } from "../../../services/restaurants/restaurants.context";
 
 const SearchContainer = styled(View)`
   padding: ${(props) => props.theme.space[3]};
 `;
 
-const RestaurantListContainer = styled(View)`
-  flex: 1;
-  padding: ${(props) => props.theme.space[3]};
+const RestaurantList = styled(FlatList).attrs({
+  contentContainerStyle: {
+    padding: 16,
+  },
+})``;
+
+const Loading = styled(ActivityIndicator)`
+  margin-left: -25px;
+`;
+const LoadingContainer = styled.View`
+  position: absolute;
+  top: 50%;
+  left: 50%;
 `;
 
-export const RestaurantsScreen = () => (
-  <SafeArea>
-    <SearchContainer>
-      <Searchbar />
-    </SearchContainer>
-    <RestaurantListContainer>
-      <RestaurantInfoCard />
-    </RestaurantListContainer>
-  </SafeArea>
-);
+export const RestaurantsScreen = () => {
+  const { isLoading, error, restaurants } = useContext(RestaurantsContext);
+  console.log(error);
+  return (
+    <SafeArea>
+      {isLoading && (
+        <LoadingContainer>
+          <Loading size={50} animating={true} color={Colors.blue300} />
+        </LoadingContainer>
+      )}
+      <SearchContainer>
+        <Searchbar />
+      </SearchContainer>
+      <RestaurantList
+        data={restaurants}
+        renderItem={({ item }) => {
+          return (
+            <Spacer position="bottom" size="large">
+              <RestaurantInfoCard restaurant={item} />
+            </Spacer>
+          );
+        }}
+        keyExtractor={(item) => item.name}
+      />
+    </SafeArea>
+  );
+};
