@@ -8,6 +8,7 @@ export const restaurantsTransform = ({ results = [] }) => {
     });
     return {
       ...restaurant, // devuelvo elr estaurant original y le agrego algunas opciones
+      address: restaurant.vicinity,
       isCloseTempotarily: restaurant.business_status === "CLOSED_TEMPORARILY",
       isOpenNow:
         restaurant.oppening_hours && restaurant.oppening_hours.open_now,
@@ -16,7 +17,7 @@ export const restaurantsTransform = ({ results = [] }) => {
   return camelize(mappedResults);
 };
 
-export const restaurantsRequest = (location = "37.7749295,-122.4194155") => {
+export const restaurantsRequest = (location) => {
   // Para que el mock imite el consumo de una API tiene que ser asincronico. Por eso se usa Promise
   return new Promise((resolve, reject) => {
     const mock = mocks[location];
