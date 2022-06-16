@@ -29,9 +29,7 @@ export const restaurantsRequest = (location) => {
 };
 restaurantsRequest()
   .then(restaurantsTransform)
-  .then((transformedResponse) => {
-    console.log(transformedResponse);
-  })
+  .then()
   .catch((err) => {
     console.log("error");
   });
